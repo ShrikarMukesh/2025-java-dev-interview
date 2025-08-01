@@ -28,6 +28,95 @@ names.forEach(name -> System.out.println(name));
 | `UnaryOperator<T>`   | `T apply(T t)`       | One input, same output         |
 | `BinaryOperator<T>`  | `T apply(T t1, T t2)`| Two same-type inputs/outputs   |
 
+
+# 🔁 Java 8 Stream API – Complete Guide
+
+Java 8 Stream API is a powerful abstraction for working with sequences of data in a functional style. It helps write concise, readable, and parallelizable code.
+
+---
+
+## 📘 Stream Creation Methods
+
+| Method                      | Description                                |
+|-----------------------------|--------------------------------------------|
+| `Stream.of(T...)`          | Creates stream from varargs/array          |
+| `Arrays.stream(T[])`       | Stream from array                          |
+| `List.stream()`            | Stream from collection                     |
+| `Stream.iterate(seed, fn)` | Infinite stream with iterative logic       |
+| `Stream.generate(Supplier)`| Infinite stream using a supplier function  |
+| `Files.lines(Path)`        | Stream of lines from file                  |
+
+---
+
+## 🔄 Intermediate Operations
+
+| Method               | Description                                      |
+|----------------------|--------------------------------------------------|
+| `filter(Predicate)`  | Filters elements based on a condition            |
+| `map(Function)`      | Transforms each element                          |
+| `flatMap(Function)`  | Flattens nested streams                          |
+| `distinct()`         | Removes duplicates                               |
+| `sorted()`           | Sorts elements in natural order                  |
+| `sorted(Comparator)` | Sorts with a custom comparator                   |
+| `peek(Consumer)`     | Debugging/intermediate inspection                |
+| `limit(n)`           | Limits to first n elements                       |
+| `skip(n)`            | Skips first n elements                           |
+| `mapToInt()` / `mapToLong()` / `mapToDouble()` | Converts to primitive streams |
+
+---
+
+## ✅ Terminal Operations
+
+| Method                 | Description                                     |
+|------------------------|-------------------------------------------------|
+| `forEach(Consumer)`    | Performs action on each element                 |
+| `toArray()`            | Collects stream into array                      |
+| `reduce()`             | Combines elements using accumulator             |
+| `collect(Collectors)`  | Collects to list, set, map, etc.                |
+| `count()`              | Counts elements                                 |
+| `anyMatch(Predicate)`  | True if any element matches                     |
+| `allMatch(Predicate)`  | True if all elements match                      |
+| `noneMatch(Predicate)` | True if no elements match                       |
+| `findFirst()`          | Returns the first element (Optional)            |
+| `findAny()`            | Returns any one element (Optional)              |
+
+---
+
+## 🧺 Collectors (Used with `.collect()`)
+
+| Collector                          | Description                             |
+|-----------------------------------|-----------------------------------------|
+| `Collectors.toList()`             | Collects to a List                      |
+| `Collectors.toSet()`              | Collects to a Set                       |
+| `Collectors.toMap(k, v)`          | Collects to a Map                       |
+| `Collectors.joining()`            | Joins elements into a String            |
+| `Collectors.counting()`           | Counts elements                         |
+| `Collectors.summarizingInt()`     | Stats: count, sum, min, max, avg        |
+| `Collectors.groupingBy()`         | Groups by field or function             |
+| `Collectors.partitioningBy()`     | Partitions by predicate (true/false)    |
+| `Collectors.mapping()`            | Maps and collects                       |
+| `Collectors.reducing()`           | Reduces inside collect                  |
+
+---
+
+## 🔢 Primitive Streams
+
+| Stream Type     | Example Methods                       |
+|------------------|----------------------------------------|
+| `IntStream`      | `range(start, end)`                   |
+| `LongStream`     | `rangeClosed(start, end)`             |
+| `DoubleStream`   | `of(double...)`, `average()`, `sum()` |
+
+---
+
+## 🧵 Parallel Streams
+
+```java
+list.parallelStream()
+    .filter(x -> x > 10)
+        .map(x -> x * 2)
+        .forEach(System.out::println);
+
 ---
 
 ## ✅ 3. Stream API
