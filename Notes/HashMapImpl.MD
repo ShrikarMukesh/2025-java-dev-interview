@@ -250,5 +250,142 @@ static final int MIN_TREEIFY_CAPACITY = 64; // Table must be >= 64 before treeif
 
 ---
 
-
 ![img.png](img.png)
+
+---
+
+## 1. **LinkedList Node (used in HashMap before Java 8)**
+
+A **Node** in a linked list has:
+
+* A **key**
+* A **value**
+* A **hash** (cached hash of the key)
+* A **next** pointer (to the next node in the same bucket)
+
+```java
+static class Node<K,V> implements Map.Entry<K,V> {
+    final int hash;
+    final K key;
+    V value;
+    Node<K,V> next;  // points to the next node (linked list)
+}
+```
+
+### Characteristics:
+
+* **Structure**: Simple linear chain.
+* **Performance**: Lookup is **O(n)** in worst case (if all keys hash to the same bucket).
+* **Memory**: Lightweight (just 1 pointer to `next`).
+* **Usage**: Before Java 8, HashMap buckets always used this.
+
+---
+
+## 2. **TreeNode (introduced in Java 8)**
+
+When collisions become large, HashMap transforms the bucket into a **balanced Red-Black Tree**.
+A **TreeNode** has:
+
+* Key, value, hash (same as Node).
+* Left, right, parent pointers (like a binary tree).
+* A boolean **color** (red or black for balancing).
+
+```java
+static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
+    TreeNode<K,V> parent;
+    TreeNode<K,V> left;
+    TreeNode<K,V> right;
+    TreeNode<K,V> prev; 
+    boolean red;
+}
+```
+
+### Characteristics:
+
+* **Structure**: Red-Black Tree inside a bucket.
+* **Performance**: Lookup is **O(log n)** instead of O(n).
+* **Memory**: Heavier (extra pointers: parent, left, right, plus color flag).
+* **Usage**: Activated when bucket size > 8 (TREEIFY_THRESHOLD).
+
+---
+
+## 🔑 Key Differences:
+
+| Feature              | **LinkedList Node** | **TreeNode (RB Tree)**              |
+| -------------------- | ------------------- | ----------------------------------- |
+| Structure            | Singly linked list  | Balanced Red-Black Tree             |
+| Lookup (worst case)  | O(n)                | O(log n)                            |
+| Memory overhead      | Low                 | Higher (extra pointers + balancing) |
+| Introduced in        | Java 1.2            | Java 8                              |
+| Conversion threshold | Default             | When bucket > 8 entries             |
+
+---
+
+👉 In summary:
+
+* **LinkedList Node** is simple, efficient for small collisions.
+* **TreeNode** improves performance for large collisions by avoiding long chains.
+
+Perfect 👌 Let’s go deeper into **Treeify ↔ Untreeify** in Java 8 HashMap.
+
+---
+
+## 🌳 When HashMap **Treeifies** (LinkedList → TreeNode)
+
+HashMap decides to convert a bucket from a **LinkedList** to a **Red-Black Tree** if:
+
+1. **Collision count > TREEIFY_THRESHOLD (8 by default)**
+
+    * If a single bucket (same hash index) has **more than 8 nodes**, HashMap tries to treeify.
+
+2. **BUT**: Treeification only happens if the **table (array of buckets) size ≥ MIN_TREEIFY_CAPACITY (64)**.
+
+    * If the table is too small (<64), HashMap resizes (doubles capacity) instead of treeifying.
+    * This avoids expensive tree nodes for small maps.
+
+📌 Code constants from `HashMap.java`:
+
+```java
+static final int TREEIFY_THRESHOLD = 8;
+static final int UNTREEIFY_THRESHOLD = 6;
+static final int MIN_TREEIFY_CAPACITY = 64;
+```
+
+---
+
+## 🍂 When HashMap **Untreeifies** (TreeNode → LinkedList)
+
+If a bucket (which is a tree) shrinks due to **removals**:
+
+* When the number of nodes in that bucket becomes **≤ UNTREEIFY_THRESHOLD (6 by default)**,
+  HashMap converts the **tree back into a LinkedList**.
+
+Reason:
+
+* Maintaining a Red-Black tree for very few nodes is more costly than a simple linked list.
+* Switching back saves memory and overhead.
+
+---
+
+## 🔑 Summary Table
+
+| Condition                           | Action                                 |
+| ----------------------------------- | -------------------------------------- |
+| Bucket size ≤ 8                     | Keep as LinkedList                     |
+| Bucket size > 8 AND table size ≥ 64 | Convert to TreeNode (treeify)          |
+| Bucket size drops ≤ 6               | Convert back to LinkedList (untreeify) |
+
+---
+
+## ⚡ Example Scenario
+
+1. Start with collisions in a bucket → nodes form a LinkedList.
+2. Once **9th element** collides → if table size ≥ 64 → LinkedList → TreeNode.
+3. If later some elements are removed and only **6 remain** → TreeNode → LinkedList again.
+
+---
+
+👉 So HashMap dynamically balances **memory (LinkedList)** vs **performance (Tree)** depending on load.
+
+
+
