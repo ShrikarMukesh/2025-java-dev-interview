@@ -16,5 +16,8 @@ public class Lexcography {
                 }
             }
         }
+        EmployeeImmutable employeeImmutable = new EmployeeImmutable("Shrikar", 12);
+        System.out.println(employeeImmutable);
+
     }
 }
