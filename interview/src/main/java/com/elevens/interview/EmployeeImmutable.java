@@ -1,4 +1,4 @@
-package com.elevens;
+package com.elevens.interview;
 
 public final class EmployeeImmutable {
     private final String name;
