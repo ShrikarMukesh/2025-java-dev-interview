@@ -77,4 +77,7 @@ public class UnderStatingForkJoinPool {
     public void print(){
         System.out.println("Print methody");
     }
+    public void add(){
+        System.out.println("add methody");
+    }
 }
