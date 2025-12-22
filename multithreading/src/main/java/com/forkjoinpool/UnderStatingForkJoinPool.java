@@ -74,4 +74,7 @@ public class UnderStatingForkJoinPool {
             return sum;
         }
     }
+    public void print(){
+        System.out.println("Print method");
+    }
 }
