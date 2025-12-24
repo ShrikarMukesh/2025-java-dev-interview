@@ -17,7 +17,7 @@ Here’s why:
 So:
 
 ```java
-class Test {
+class basic.Test {
     static {
         // ❌ Compile-time error: unreported exception
         throw new Exception("Checked Exception");
@@ -32,7 +32,7 @@ This won’t compile.
 * You can throw **unchecked exceptions** (`RuntimeException` or subclasses) from a static block:
 
 ```java
-class Test {
+class basic.Test {
     static {
         // ✅ Allowed
         throw new RuntimeException("Unchecked Exception");
@@ -43,7 +43,7 @@ class Test {
 * Or, if you want to deal with checked exceptions, you must **handle them inside the block**:
 
 ```java
-class Test {
+class basic.Test {
     static {
         try {
             throw new Exception("Checked Exception handled");
@@ -99,7 +99,7 @@ class Employee {
     // ❌ hashCode not overridden
 }
 
-public class Test {
+public class basic.Test {
     public static void main(String[] args) {
         Employee e1 = new Employee("Alice");
         Employee e2 = new Employee("Alice");
@@ -158,7 +158,7 @@ class Employee {
     // ❌ equals not overridden
 }
 
-public class Test {
+public class basic.Test {
     public static void main(String[] args) {
         Employee e1 = new Employee("Alice");
         Employee e2 = new Employee("Alice");
