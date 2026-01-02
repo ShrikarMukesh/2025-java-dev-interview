@@ -1,7 +1,0 @@
-package com.elevens.newer;
-
-public class Interview {
-    public static void main(String[] args) {
-
-    }
-}
