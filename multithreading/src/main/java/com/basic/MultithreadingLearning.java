@@ -1,4 +1,4 @@
-package multithreading;
+package com.basic;
 
 //public class MultithreadingLearning implements Runnable {
 //

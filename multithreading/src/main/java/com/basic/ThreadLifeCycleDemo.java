@@ -1,4 +1,4 @@
-package multithreading;
+package com.basic;
 
 public class ThreadLifeCycleDemo {
     private static final Object lock = new Object();

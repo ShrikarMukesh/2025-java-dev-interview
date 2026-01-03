@@ -1,4 +1,4 @@
-package multithreading; // package declaration: places this class in the 'multithreading' package
+package com.basic; // package declaration: places this class in the 'multithreading' package
 
 public class MonitorLockExample { // class demonstrating monitor locks (synchronization) in Java
 

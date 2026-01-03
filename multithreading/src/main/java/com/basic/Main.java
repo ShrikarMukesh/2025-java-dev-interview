@@ -1,4 +1,4 @@
-package multithreading;
+package com.basic;
 
 public class Main {
     public static void main(String[] args) {
