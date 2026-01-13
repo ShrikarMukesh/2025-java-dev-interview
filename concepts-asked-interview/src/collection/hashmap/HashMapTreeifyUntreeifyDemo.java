@@ -39,27 +39,76 @@ public class HashMapTreeifyUntreeifyDemo {
             map.put(new CollidingKey(i), "Value-" + i);
         }
 
-        System.out.println("After inserting 12 colliding keys:");
-        checkBucketType(map);
+        System.out.println("After inserting 12 colliding keys: size=" + map.size());
+        checkBucketTypeAndCount(map);
 
         // Now remove keys to trigger UN-TREEIFY (below 6 elements in the bucket)
         for (int i = 1; i <= 7; i++) {
             map.remove(new CollidingKey(i));
-            System.out.println("Removed Key-" + i);
-            checkBucketType(map);
+            System.out.println("Removed Key-" + i + "; size=" + map.size());
+            checkBucketTypeAndCount(map);
         }
     }
 
-    // Reflection helper to check the bucket type
-    private static void checkBucketType(HashMap<?, ?> map) throws Exception {
-        Field tableField = HashMap.class.getDeclaredField("table");
-        tableField.setAccessible(true);
-        Object[] table = (Object[]) tableField.get(map);
+    // Reflection helper to check the bucket type and count nodes in the first non-empty bucket
+    private static void checkBucketTypeAndCount(HashMap<?, ?> map) throws Exception {
+        try {
+            Field tableField = HashMap.class.getDeclaredField("table");
+            tableField.setAccessible(true);
+            Object[] table = (Object[]) tableField.get(map);
 
-        for (Object bucket : table) {
-            if (bucket != null) {
-                System.out.println("👉 Bucket class: " + bucket.getClass().getName());
+            if (table == null) {
+                System.out.println("Internal table is null (no buckets allocated yet)");
+                return;
+            }
+
+            int nonEmptyBuckets = 0;
+            for (Object bucket : table) {
+                if (bucket != null) {
+                    nonEmptyBuckets++;
+                }
+            }
+
+            System.out.println("Non-empty bucket count: " + nonEmptyBuckets);
+
+            for (Object bucket : table) {
+                if (bucket != null) {
+                    int cnt = countNodes(bucket);
+                    System.out.println("👉 Bucket class: " + bucket.getClass().getName() + ", nodeCount=" + cnt);
+                }
+            }
+        } catch (java.lang.reflect.InaccessibleObjectException e) {
+            System.err.println("Reflection access to java.util.HashMap internals is blocked by the Java module system.");
+            System.err.println("To run this demo, re-run the JVM with the following option:");
+            System.err.println("  --add-opens java.base/java.util=ALL-UNNAMED");
+            System.err.println("Example:");
+            System.err.println("  javac HashMapTreeifyUntreeifyDemo.java");
+            System.err.println("  java --add-opens java.base/java.util=ALL-UNNAMED collection.hashmap.HashMapTreeifyUntreeifyDemo");
+            throw e;
+        }
+    }
+
+    // Count nodes by following 'next' references (works for Node and TreeNode)
+    private static int countNodes(Object bucket) throws Exception {
+        int count = 0;
+        Object cur = bucket;
+        while (cur != null) {
+            count++;
+            try {
+                Field nextField = cur.getClass().getDeclaredField("next");
+                nextField.setAccessible(true);
+                cur = nextField.get(cur);
+            } catch (NoSuchFieldException nsfe) {
+                // Some wrapper (older/newer impl) might use a different shape; try to find 'first' field (TreeBin)
+                try {
+                    Field firstField = cur.getClass().getDeclaredField("first");
+                    firstField.setAccessible(true);
+                    cur = firstField.get(cur);
+                } catch (NoSuchFieldException nsfe2) {
+                    break;
+                }
             }
         }
+        return count;
     }
 }
